@@ -1,0 +1,11 @@
+.time-slice {
+  font-size: 13px;
+  padding: 3px 0px;
+  writing-mode: vertical-rl;
+  text-orientation: sideways;
+  border-right: 1px solid black;
+}
+
+.time-slice:last-child {
+  border-right: none;
+}
