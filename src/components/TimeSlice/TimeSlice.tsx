@@ -6,6 +6,7 @@ export interface TimeSliceInterface {
     width: number
 }
 
+//this component is simply used as a label on top of the events
 const TimeSlice = ({date, width}: TimeSliceInterface) => {
 
     const startHourString = padZero(date.getHours());

@@ -36,14 +36,7 @@ const Day = (props: DayProps) => {
 
     const totalSlices: number = maxHalfHour - minHalfHour;
 
-    let eventsComponents = events.map(({color, start, end}) => { 
-        const startOffset: number = (getHalfHourSlices(start) - minHalfHour) * DAY_WIDTH / totalSlices;
-        const width: number = (getHalfHourSlices(end) - getHalfHourSlices(start)) * DAY_WIDTH / totalSlices;
-        return (
-            <DayEvent color={color} start={start} end={end} startOffset={startOffset} width={width} />
-        );
-    })
-    
+    // prepare rendering the time slice labels on top
     let timeSlicesComponents: Array<JSX.Element> = [];
 
     for(let i = minHalfHour; i < maxHalfHour; i++) {
@@ -52,6 +45,16 @@ const Day = (props: DayProps) => {
         let width = DAY_WIDTH / totalSlices;
         timeSlicesComponents.push(<TimeSlice date={date} width={width} />)
     }
+
+    // prepare rendering the event components 
+    let eventsComponents = events.map(({color, start, end}) => { 
+        const startOffset: number = (getHalfHourSlices(start) - minHalfHour) * DAY_WIDTH / totalSlices;
+        const width: number = (getHalfHourSlices(end) - getHalfHourSlices(start)) * DAY_WIDTH / totalSlices;
+        return (
+            <DayEvent color={color} start={start} end={end} startOffset={startOffset} width={width} />
+        );
+    })
+    
 
     let today = new Date();
     const todayString = today.toLocaleDateString("en-UK", { weekday: undefined, year: 'numeric', month: 'long', day: 'numeric' })
