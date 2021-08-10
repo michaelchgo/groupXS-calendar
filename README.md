@@ -1,4 +1,10 @@
-In the project directory, you can run:
+First install [node](https://nodejs.org/en/download/)
+
+In the project directory, first:
+
+### `npm install`
+
+you can run:
 
 ### `npm start`
 
