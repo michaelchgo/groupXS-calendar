@@ -49,7 +49,10 @@ const DayEventAdd = ({addEvent}: DayEventAddPropsInterface) => {
             end
         }
 
-        if(newEvent.start.getTime() >= newEvent.end.getTime()) {
+        if(!startTime || !endTime) {
+            alert("start time or end time cannot be empty")
+        }
+        else if(newEvent.start.getTime() >= newEvent.end.getTime()) {
             alert("start time cannot be equal or greater than end time")
         }
         else {
