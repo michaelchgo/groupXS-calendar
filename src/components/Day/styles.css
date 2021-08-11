@@ -2,6 +2,7 @@
   width: 288px;
   border-radius: 2px;
   border: 1px solid black;
+  min-height: 200px;
 }
 
 .time-slices-label {

@@ -6,11 +6,14 @@ export const padZero = (number: number): string => {
     return stringOutput;
 }
 
-export const getHalfHourSlices = (date: Date): number => {
-    let halfHourSlices = date.getHours() * 2;
-    if(date.getMinutes() >= 30) {
-        halfHourSlices ++;
-    }
+export const getHalfHourSlicesFloor = (date: Date): number => {
+    return date.getHours() * 2 + Math.floor(date.getMinutes() / 30);;
+}
 
-    return halfHourSlices;
+export const getHalfHourSlicesCeil = (date: Date): number => {
+    return date.getHours() * 2 + Math.ceil(date.getMinutes() / 30);;
+}
+
+export const getTotalMinutes = (date: Date): number => {
+    return date.getHours() * 60 + date.getMinutes();
 }

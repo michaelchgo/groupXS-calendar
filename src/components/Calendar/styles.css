@@ -1,5 +1,10 @@
-.calendar {
+.calendar-container {
   display: flex;
   justify-content: center;
   width: 100%;
+}
+
+.calendar {
+  display: block;
+  width: 288px;
 }
