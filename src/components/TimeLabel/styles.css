@@ -1,0 +1,18 @@
+.time-label-container {
+  font-size: 15px;
+  padding: 3px 3px;
+  display: flex;
+  width: 100%;
+}
+
+.time-label {
+  width: 50%;
+}
+
+.time-label.time-label-start {
+  text-align: left;
+}
+
+.time-label.time-label-end {
+  text-align: right;
+}

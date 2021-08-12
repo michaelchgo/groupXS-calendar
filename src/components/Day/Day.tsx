@@ -1,8 +1,8 @@
 import './styles.css'
 import DayEvent from '../DayEvent/DayEvent';
-import TimeSlice from '../TimeSlice/TimeSlice';
+import TimeLabel from '../TimeLabel/TimeLabel';
 import {DAY_WIDTH} from '../../Constants';
-import {getHalfHourSlicesCeil, getHalfHourSlicesFloor, getTotalMinutes} from '../../Helpers';
+import {getTotalMinutes} from '../../Helpers';
 
 export interface DayEventItemInterface {
     color: string,
@@ -15,61 +15,53 @@ export interface DayProps {
 }
 
 const Day = (props: DayProps) => {
-    const { events } = props;
+    let { events } = props;
 
-    // we allocate the space by getting the 
-    // earliest start time nd latest end time
-    // for the labels, we divide it into 30 minute sections
-    let minHalfHour: number = 48; // we'll start with 48 since we have 48 half hours in a day
-    let maxHalfHour: number = 0;
+    // sort events by start date
+    // if they have the same start date, sort them by duration 
+    // longer events gets placed before shorter ones
+    events.sort((eventA, eventB) => {
+        if (getTotalMinutes(eventA.start) <getTotalMinutes(eventB.start)) {
+            return -1;
+        }
+        else if (getTotalMinutes(eventB.start) < getTotalMinutes(eventA.start)) {
+            return 1;
+        }
+        else {
+            if (getTotalMinutes(eventA.end) > getTotalMinutes(eventB.end)) {
+                return -1;
+            }
+            else if (getTotalMinutes(eventB.end) > getTotalMinutes(eventA.end)) {
+                return 1;
+            }
+            else {
+                return 0;
+            }   
+        }
+    })
+
+    let minDate = new Date();
+    minDate.setHours(23, 59);
+    let maxDate = new Date();
+    maxDate.setHours(0, 0);
 
     events.forEach(({start, end}) => {
-        let currentMinHalfHour = getHalfHourSlicesFloor(start)
-        if(currentMinHalfHour < minHalfHour) {
-            minHalfHour = currentMinHalfHour
+        if (getTotalMinutes(minDate) > getTotalMinutes(start)){
+            minDate = start;
         }
 
-        let currentMaxHalfHour = getHalfHourSlicesCeil(end)
-        if(currentMaxHalfHour > maxHalfHour) {
-            maxHalfHour = currentMaxHalfHour
+        if (getTotalMinutes(maxDate) < getTotalMinutes(end)){
+            maxDate = end;
         }
-    });
+    })
 
-    let totalSlices: number = maxHalfHour - minHalfHour;
-    totalSlices = totalSlices === 0 ? 1 : totalSlices
-    
-    // prepare rendering the time slice labels on top
-    let timeSlicesComponents: Array<JSX.Element> = [];
-    // default interval is 30 minutes
-    let timeSliceHalfHourIntervals = 1;
-    // if the total timespan of all events is more than 12 hours
-    // the interval of the labels would be 2 hours
-    if (totalSlices > 24) {
-        timeSliceHalfHourIntervals = 4;
-    }
-    // if the total timespan of all events is more than 6 hours
-    // the interval of the labels would be 1 hour
-    else if (totalSlices > 12) {
-        timeSliceHalfHourIntervals = 2;
-    }
-
-    // we add the modulo of the intervals to the total slices
-    // so we can get the accurate position of the events
-    totalSlices += totalSlices % timeSliceHalfHourIntervals;
-
-    let totalMinuteSpan: number = totalSlices * 30;
-    totalMinuteSpan = totalMinuteSpan === 0 ? 1 : totalMinuteSpan
-
-    for(let i = minHalfHour; i < maxHalfHour; i+=timeSliceHalfHourIntervals) {
-        let date: Date = new Date();
-        date.setHours(Math.floor(i / 2), i % 2 * 30);
-        let width = DAY_WIDTH / (totalSlices / timeSliceHalfHourIntervals);
-        timeSlicesComponents.push(<TimeSlice key={i} date={date} width={width} />)
-    }
+    const minMinutes = getTotalMinutes(minDate);
+    const maxMinutes = getTotalMinutes(maxDate);
+    const totalMinuteSpan = maxMinutes - minMinutes;
 
     // prepare rendering the event components 
     let eventsComponents = events.map(({color, start, end}, index) => { 
-        const startOffset: number = (getTotalMinutes(start) - minHalfHour * 30) * DAY_WIDTH / totalMinuteSpan;
+        const startOffset: number = (getTotalMinutes(start) - minMinutes) * DAY_WIDTH / totalMinuteSpan;
         const width: number = (getTotalMinutes(end) - getTotalMinutes(start)) * DAY_WIDTH / totalMinuteSpan;
         return (
             <DayEvent key={index} color={color} start={start} end={end} startOffset={startOffset} width={width} />
@@ -84,7 +76,7 @@ const Day = (props: DayProps) => {
         <div className="day">
             <h2>{todayString}</h2>
             <div className="time-slices-label">
-                {timeSlicesComponents}
+                { events.length > 0 ? <TimeLabel minDate={minDate} maxDate={maxDate} /> : null }
             </div>
             {eventsComponents}
         </div>
